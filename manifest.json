@@ -1,0 +1,19 @@
+{
+  "name": "SHADOW AI",
+  "short_name": "SHADOW",
+  "description": "Personal voice AI assistant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050608",
+  "theme_color": "#050608",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "shadow-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

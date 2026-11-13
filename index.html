@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050608">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SHADOW">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="shadow-icon.svg">
+<title>SHADOW AI</title>
+<style>
+:root{color-scheme:dark;--gold:#aeb4bf;--amber:#454b55;--muted:#a9a9ad}
+*{box-sizing:border-box}
+body{margin:0;background:#111214;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.app{max-width:560px;margin:auto;min-height:100svh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 18px env(safe-area-inset-bottom)}
+header{height:66px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #292a2d}
+.brand{font-size:15px;letter-spacing:.22em;font-weight:700}.brand span{color:var(--gold)}
+.status{font-size:11px;color:#b9b9bd;letter-spacing:.13em}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 0 20px}
+.eyebrow{color:#aeb4bf;letter-spacing:.28em;font-size:10px;margin-bottom:16px}
+.core-wrap{width:min(78vw,340px);aspect-ratio:1;position:relative;display:grid;place-items:center;margin:4px auto 24px}
+.core-wrap:before,.core-wrap:after{content:"";position:absolute;border-radius:50%;inset:2%;border:1px solid rgba(190,198,210,.18);box-shadow:0 0 28px rgba(0,0,0,.65),inset 0 0 30px rgba(125,135,150,.06)}
+.core-wrap:after{inset:12%;border-style:dashed;animation:spin 32s linear infinite}
+.ring{position:absolute;border-radius:50%;border:2px solid transparent;border-top-color:#c4cbd5;border-bottom-color:#343a44;filter:drop-shadow(0 0 8px #687384);animation:spin 9s linear infinite}
+.ring.one{inset:7%}.ring.two{inset:18%;animation-direction:reverse;animation-duration:13s;border-top-color:#8d98aa;border-bottom-color:#252a33}
+.ring.three{inset:28%;animation-duration:6s;border-left-color:#737f91;border-right-color:#343b47}
+.orb{width:43%;height:43%;border-radius:50%;background:radial-gradient(circle at 50% 42%,#b9c0cc 0,#555e6d 9%,#202630 29%,#090b0f 57%,#020304 76%);box-shadow:0 0 22px #4b5565,0 0 65px rgba(95,108,128,.28),inset 0 0 20px #7b8492;position:relative}
+.orb:before,.orb:after{content:"";position:absolute;inset:-23%;border-radius:50%;border:1px solid rgba(180,190,205,.28);transform:rotateX(68deg)}
+.orb:after{transform:rotateY(68deg) rotateX(15deg);border-color:rgba(105,118,138,.35)}
+.core-wrap.listening .orb{animation:pulse .9s ease-in-out infinite alternate}
+.core-wrap.listening .ring{animation-duration:2s}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{to{transform:scale(1.13);filter:brightness(1.4)}}
+h1{font-size:25px;letter-spacing:.17em;margin:0 0 7px;font-weight:500}
+.subtitle{font-size:13px;color:var(--muted);text-align:center;line-height:1.5;max-width:290px}
+#transcript{min-height:48px;width:100%;max-width:420px;margin:20px 0 8px;text-align:center;color:#ded0bf;font-size:14px;line-height:1.5}
+.controls{display:flex;align-items:center;justify-content:center;gap:18px;margin:12px 0 22px}
+.mic{width:72px;height:72px;border-radius:50%;border:1px solid #687384;background:radial-gradient(circle at 40% 30%,#535d6d,#171b22 65%,#050608);color:#fff;font-size:27px;box-shadow:0 0 25px rgba(125,140,165,.22);cursor:pointer}
+.small{width:44px;height:44px;border-radius:50%;border:1px solid #444;background:#202124;color:#ddd;font-size:17px}
+.hint{font-size:11px;color:#888;margin-top:0}
+.panel{width:100%;border:1px solid #303034;border-radius:18px;padding:14px;background:#191a1d;margin:10px 0 18px}
+.panel label{display:block;color:#aaa;font-size:11px;letter-spacing:.1em;margin-bottom:8px}
+select{background:#242529;color:#f4f4f5;border:1px solid #414247;border-radius:10px;padding:10px;width:100%;font-size:14px}
+footer{border-top:1px solid #292a2d;padding:14px 0 18px;display:flex;justify-content:space-around;color:#9d9da2;font-size:10px;letter-spacing:.08em}
+footer span{display:flex;flex-direction:column;align-items:center;gap:5px}
+footer b{font-size:18px;color:#aeb7c5;font-weight:400}
+.note{font-size:10px;color:#777;text-align:center;line-height:1.5;margin:0 0 12px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand">S.H.A.D.O.W <span>／ AI</span></div><div class="status" id="state">SYSTEM STANDBY</div></header>
+<main>
+<div class="eyebrow">PERSONAL AI INTERFACE</div>
+<div class="core-wrap" id="core"><div class="ring one"></div><div class="ring two"></div><div class="ring three"></div><div class="orb"></div></div>
+<h1>SHADOW</h1><div class="subtitle" id="subtitle">At your service, Sir.<br>Tap the microphone and speak.</div>
+<div id="transcript">Awaiting your command…</div>
+<div class="controls">
+<button class="small" id="stop" aria-label="Stop speaking">■</button>
+<button class="mic" id="mic" aria-label="Start listening">🎙</button>
+<button class="small" id="hello" aria-label="Greeting">✦</button>
+</div>
+<div class="hint">TAP TO SPEAK · TAP AGAIN WHEN FINISHED</div>
+<div class="panel"><label for="language">VOICE LANGUAGE</label><select id="language"><option value="en-IN">English (India)</option><option value="ta-IN">தமிழ் (Tamil)</option></select></div>
+<p class="note">Prototype mode: voice input and spoken demo replies. A secure AI connection is needed for real-time intelligent answers.</p>
+</main>
+<footer><span><b>◉</b>VOICE</span><span><b>⌁</b>INTELLIGENCE</span><span><b>◌</b> SYSTEM</span></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recognition=null, listening=false;
+function speak(text){
+ if(!('speechSynthesis' in window)){ $('transcript').textContent=text; return; }
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);
+ u.lang=$('language').value; u.rate=.88; u.pitch=.78; u.volume=1;
+ const voices=speechSynthesis.getVoices();
+ const match=voices.find(v=>v.lang.toLowerCase().startsWith(u.lang.toLowerCase()));
+ if(match)u.voice=match;
+ speechSynthesis.speak(u);
+}
+function reply(text){
+ const t=text.toLowerCase();
+ if(/hello|hi|வணக்கம்/.test(t))return "Good day, Sir. SHADOW is online and ready to assist you.";
+ if(/time|நேரம்/.test(t))return "The current time on your iPhone is "+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+", Sir.";
+ if(/date|today|தேதி|இன்று/.test(t))return "Today is "+new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})+", Sir.";
+ if(/who are you|உன் பெயர்/.test(t))return "I am SHADOW, your personal voice assistant. This is my prototype mode, Sir.";
+ if(/நன்றி|thank/.test(t))return "You're welcome, Sir. Always happy to help.";
+ return "I heard you say: "+text+". My voice interface is working, Sir. To answer open-ended questions intelligently, the next step is connecting a secure AI service.";
+}
+function start(){
+ if(!SpeechRecognition){$('state').textContent='VOICE INPUT UNAVAILABLE';$('transcript').textContent='Voice recognition is not supported in this browser. Try opening this app in Safari.';return;}
+ recognition=new SpeechRecognition(); recognition.lang=$('language').value; recognition.interimResults=false; recognition.maxAlternatives=1;
+ recognition.onstart=()=>{listening=true;$('core').classList.add('listening');$('state').textContent='LISTENING';$('subtitle').textContent='I am listening, Sir…';$('transcript').textContent='Speak now…';};
+ recognition.onresult=e=>{const text=e.results[0][0].transcript;$('transcript').textContent='“'+text+'”';const answer=reply(text);$('subtitle').textContent=answer;speak(answer);};
+ recognition.onerror=e=>{$('transcript').textContent='Voice input error: '+e.error+'. Check microphone permission and try again.';};
+ recognition.onend=()=>{listening=false;$('core').classList.remove('listening');$('state').textContent='SYSTEM STANDBY';$('subtitle').textContent='At your service, Sir.';};
+ recognition.start();
+}
+$('mic').addEventListener('click',()=>{if(listening){recognition.stop();}else{start();}});
+$('stop').addEventListener('click',()=>{if(recognition&&listening)recognition.stop();speechSynthesis.cancel();});
+$('hello').addEventListener('click',()=>{const msg='Good day, Sir. SHADOW is online. How may I assist you?';$('transcript').textContent='SHADOW initialized';$('subtitle').textContent=msg;speak(msg);});
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
